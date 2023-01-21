@@ -41,8 +41,7 @@ RUN apt install -y \
     php7.4-cli \
     php7.4-bcmath \
     php7.4-zip \
-    php7.4-pgsql \
-    php-igbinary
+    php7.4-pgsql 
 
 RUN apt install -y php7.4-redis
 RUN apt install -y php7.4-imagick
