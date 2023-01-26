@@ -10,14 +10,14 @@ ENV TZ=Asia/Jakarta
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt update -y
 RUN apt upgrade -y
-RUN apt install rsync openssh-client curl zip unzip -y
+RUN apt install rsync openssh-client curl zip unzip wget -y
 
 RUN apt -y install software-properties-common
 RUN add-apt-repository -y ppa:ondrej/nginx
 RUN add-apt-repository -y ppa:ondrej/php
 RUN apt update
-RUN apt -y install php7.4
-RUN apt -y install php7.4-fpm
+RUN apt -y install php8.1
+RUN apt -y install php8.1-fpm
 
 # Install dependencies
 RUN apt install -y \
@@ -31,21 +31,20 @@ RUN apt install -y \
     unzip \
     git \
     curl \
-    php7.4-gd \
-    php7.4-intl \
-    php7.4-mysql \
-    php7.4-mbstring \
-    php7.4-xml \
-    php7.4-curl \
-    php7.4-common \
-    php7.4-cli \
-    php7.4-bcmath \
-    php7.4-zip \
-    php7.4-pgsql \
-    php-igbinary
+    php8.1-gd \
+    php8.1-intl \
+    php8.1-mysql \
+    php8.1-mbstring \
+    php8.1-xml \
+    php8.1-curl \
+    php8.1-common \
+    php8.1-cli \
+    php8.1-bcmath \
+    php8.1-zip \
+    php8.1-pgsql
 
-RUN apt install -y php7.4-redis
-RUN apt install -y php7.4-imagick
+RUN apt install -y php8.1-redis
+RUN apt install -y php8.1-imagick
 
 RUN apt install nginx -y
 RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
@@ -59,6 +58,7 @@ RUN ln -s /etc/nginx/sites-available/dev /etc/nginx/sites-enabled/dev
 
 # Configure PHP
 COPY ./php/local.ini /usr/local/etc/php/conf.d/local.ini
+RUN bash -c "echo extension=imagick.so > /etc/php/8.1/cli/php.ini"
 
 # Clear cache
 RUN apt clean && rm -rf /var/lib/apt/lists/*
@@ -67,4 +67,4 @@ RUN apt clean && rm -rf /var/lib/apt/lists/*
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Start php-fpm and nginx server
-CMD service php7.4-fpm start && nginx
+CMD service php8.1-fpm start && nginx

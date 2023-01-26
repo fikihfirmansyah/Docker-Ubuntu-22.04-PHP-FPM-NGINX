@@ -4,7 +4,3 @@
 .travis.yml
 *Dockerfile*
 *docker-compose*
-mysql
-nginx
-php
-app
