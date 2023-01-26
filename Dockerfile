@@ -41,10 +41,9 @@ RUN apt install -y \
     php8.1-cli \
     php8.1-bcmath \
     php8.1-zip \
-    php8.1-pgsql
-
-RUN apt install -y php8.1-redis
-RUN apt install -y php8.1-imagick
+    php8.1-pgsql \
+    php8.1-redis \
+    php8.1-imagick 
 
 RUN apt install nginx -y
 RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
