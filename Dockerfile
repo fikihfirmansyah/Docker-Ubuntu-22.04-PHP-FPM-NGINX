@@ -58,7 +58,7 @@ RUN ln -s /etc/nginx/sites-available/dev /etc/nginx/sites-enabled/dev
 
 # Configure PHP
 COPY ./php/local.ini /usr/local/etc/php/conf.d/local.ini
-RUN bash -c "echo extension=imagick.so > /etc/php/8.1/cli/php.ini"
+RUN echo "extension=imagick.so;" >> /etc/php/8.1/cli/php.ini
 
 # Clear cache
 RUN apt clean && rm -rf /var/lib/apt/lists/*
