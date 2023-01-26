@@ -42,8 +42,7 @@ RUN apt install -y \
     php8.1-bcmath \
     php8.1-zip \
     php8.1-pgsql \
-    php8.1-redis \
-    php8.1-imagick 
+    php8.1-redis 
 
 RUN apt install nginx -y
 RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
@@ -57,13 +56,15 @@ RUN ln -s /etc/nginx/sites-available/dev /etc/nginx/sites-enabled/dev
 
 # Configure PHP
 COPY ./php/local.ini /usr/local/etc/php/conf.d/local.ini
-RUN echo "extension=imagick.so;" >> /etc/php/8.1/cli/php.ini
 
 # Clear cache
 RUN apt clean && rm -rf /var/lib/apt/lists/*
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN apt -y install php8.1-imagick
+RUN echo "extension=imagick.so;" >> /etc/php/8.1/cli/php.ini
 
 # Start php-fpm and nginx server
 CMD service php8.1-fpm start && nginx
