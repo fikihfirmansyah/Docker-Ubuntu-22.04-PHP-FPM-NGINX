@@ -63,7 +63,8 @@ RUN apt clean && rm -rf /var/lib/apt/lists/*
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN apt -y install php8.1-imagick
+RUN apt update -y
+RUN apt install php8.1-imagick -y 
 RUN echo "extension=imagick.so;" >> /etc/php/8.1/cli/php.ini
 
 # Start php-fpm and nginx server
