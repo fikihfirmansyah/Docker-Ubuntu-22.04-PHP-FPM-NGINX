@@ -12,18 +12,6 @@ RUN apt update -y
 RUN apt upgrade -y
 RUN apt install rsync openssh-client curl zip unzip wget -y
 
-# npm
-RUN apt install nodejs -y
-RUN apt install npm -y
-RUN npm install -g npm@latest
-RUN rm -rf /usr/local/lib/node_modules/npm
-RUN mv node_modules/npm /usr/local/lib/node_modules/npm
-
-RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-RUN source ~/.bashrc
-RUN nvm install 14.18.1
-RUN nvm use 14.18.1
-
 RUN apt -y install software-properties-common
 RUN add-apt-repository -y ppa:ondrej/nginx
 RUN add-apt-repository -y ppa:ondrej/php
@@ -71,6 +59,18 @@ RUN ln -s /etc/nginx/sites-available/dev /etc/nginx/sites-enabled/dev
 # Configure PHP
 COPY ./php/local.ini /usr/local/etc/php/conf.d/local.ini
 RUN bash -c "echo extension=imagick.so > /etc/php/8.1/cli/php.ini"
+
+# npm
+RUN apt install nodejs -y
+RUN apt install npm -y
+RUN npm install -g npm@latest
+RUN rm -rf /usr/local/lib/node_modules/npm
+RUN mv node_modules/npm /usr/local/lib/node_modules/npm
+
+RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+RUN source ~/.bashrc
+RUN nvm install 14.18.1
+RUN nvm use 14.18.1
 
 # Clear cache
 RUN apt clean && rm -rf /var/lib/apt/lists/*
