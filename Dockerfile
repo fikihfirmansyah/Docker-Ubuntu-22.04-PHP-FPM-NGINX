@@ -12,6 +12,18 @@ RUN apt update -y
 RUN apt upgrade -y
 RUN apt install rsync openssh-client curl zip unzip wget -y
 
+# npm
+RUN apt install nodejs -y
+RUN apt install npm -y
+RUN npm install -g npm@latest
+RUN rm -rf /usr/local/lib/node_modules/npm
+RUN mv node_modules/npm /usr/local/lib/node_modules/npm
+
+RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+RUN source ~/.bashrc
+RUN nvm install 14.18.1
+RUN nvm use 14.18.1
+
 RUN apt -y install software-properties-common
 RUN add-apt-repository -y ppa:ondrej/nginx
 RUN add-apt-repository -y ppa:ondrej/php
