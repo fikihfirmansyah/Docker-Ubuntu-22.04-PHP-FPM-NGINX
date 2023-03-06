@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 USER root
 
 # Set working directory
-ENV  APPPATH=/var/www/dev/api/current
+ENV  APPPATH=/var/www/service
 WORKDIR ${APPPATH}
 RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
@@ -50,8 +50,8 @@ RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 # Configure Nginx
 RUN rm /etc/nginx/sites-enabled/default
 RUN mkdir -p /var/www/service
-COPY nginx/dev /etc/nginx/sites-available/
-RUN ln -s /etc/nginx/sites-available/dev /etc/nginx/sites-enabled/dev
+COPY nginx/conf /etc/nginx/sites-available/
+RUN ln -s /etc/nginx/sites-available/conf /etc/nginx/sites-enabled/conf
 
 # Configure PHP
 COPY ./php/local.ini /usr/local/etc/php/conf.d/local.ini
