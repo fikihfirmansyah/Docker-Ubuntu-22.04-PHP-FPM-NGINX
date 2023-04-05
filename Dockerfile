@@ -1,70 +1,43 @@
-FROM ubuntu:22.04
-USER root
+# Base image
+FROM php:8.1-fpm-alpine
 
 # Set working directory
-ENV  APPPATH=/var/www/service
-WORKDIR ${APPPATH}
-RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
-
-ENV TZ=Asia/Jakarta
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt update -y
-RUN apt upgrade -y
-RUN apt install rsync openssh-client curl zip unzip wget -y
-
-RUN apt -y install software-properties-common
-RUN add-apt-repository -y ppa:ondrej/nginx
-RUN add-apt-repository -y ppa:ondrej/php
-RUN apt update
-RUN apt -y install php8.2
-RUN apt -y install php8.2-fpm
+WORKDIR /var/www/html
 
 # Install dependencies
-RUN apt install -y \
-    build-essential \
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    openssl \
+    libpng \
     libpng-dev \
-    libfreetype6-dev \
-    locales \
-    zip \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
+    libjpeg-turbo-dev \
+    libwebp-dev \
+    libpq-dev \
+    zlib-dev \
+    libzip-dev \
     unzip \
     git \
-    curl \
-    php8.2-gd \
-    php8.2-intl \
-    php8.2-mysql \
-    php8.2-mbstring \
-    php8.2-xml \
-    php8.2-curl \
-    php8.2-common \
-    php8.2-cli \
-    php8.2-bcmath \
-    php8.2-zip \
-    php8.2-pgsql \
-    php8.2-redis 
+    vim
 
-RUN apt install nginx -y
-RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql pdo_pgsql gd zip opcache 
+
+# Copy application files
+# COPY . /var/www/html
 
 # Configure Nginx
-RUN rm /etc/nginx/sites-enabled/default
-RUN mkdir -p /var/www/service
-COPY nginx/conf /etc/nginx/sites-available/
-RUN ln -s /etc/nginx/sites-available/conf /etc/nginx/sites-enabled/conf
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+RUN mkdir -p /run/nginx
 
-# Configure PHP
-COPY ./php/local.ini /usr/local/etc/php/conf.d/local.ini
+# Configure PHP.ini
+COPY php/php.ini /usr/local/etc/php/php.ini
 
-# Clear cache
-RUN apt clean && rm -rf /var/lib/apt/lists/*
+# Configure Supervisor
+COPY supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Expose port 80
+EXPOSE 80
 
-RUN apt update -y
-RUN apt install php8.2-imagick -y 
-RUN echo "extension=imagick.so;" >> /etc/php/8.2/cli/php.ini
-
-# Start php-fpm and nginx server
-CMD service php8.2-fpm start && nginx
+# Start services
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
